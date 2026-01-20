@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NHH Player $$$</title>
+    <style>
+        @font-face {
+            font-family: 'Pixel7';
+            src: url('https://github.com/drtffyhu8fdghfgd/nhhhhhhhhhhhhhhhhhhhhhhh/raw/refs/heads/main/pixel7.ttf') format('truetype');
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            -webkit-touch-callout: none; 
+            -webkit-user-select: none; 
+            -khtml-user-select: none; 
+            -moz-user-select: none; 
+            -ms-user-select: none; 
+            user-select: none;
+        }
+
+        body {
+            width: 100%;
+            height: 100vh;
+            background-color: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Pixel7', Verdana, sans-serif;
+        }
+
+        #menu {
+            position: absolute;
+            width: 660px;
+            height: 545px;
+            border: 5px solid #2d3038;
+            border-style: double;
+            background: #080808;
+            display: flex;
+            cursor: move;
+        }
+
+        #menu.dragging {
+            cursor: grabbing;
+        }
+
+        .line {
+            background: linear-gradient(100deg, #45aaf2, #fc5c65, #fed330);
+            background-size: 100% 100%;
+            width: 100%;
+            position: absolute;
+            height: 2px;
+            top: 0;
+            left: 0;
+            z-index: 10;
+        }
+
+        ul.tabs {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+            width: 60px;
+            background: #050505;
+        }
+
+        ul.tabs li {
+            background: #050505;
+            border-right: 1px solid #252729;
+            color: #4a4a4a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 17px;
+            width: 60px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        ul.tabs li img {
+            width: 40px;
+            height: 40px;
+            filter: brightness(0.3);
+            transition: filter 0.2s;
+            user-select: none;
+            -webkit-user-drag: none;
+            -khtml-user-drag: none;
+            -moz-user-drag: none;
+            -o-user-drag: none;
+            user-drag: none;
+        }
+
+        ul.tabs li:hover img {
+            filter: brightness(0.6);
+        }
+
+        ul.tabs li.current {
+            border-top: 1px solid #252729;
+            border-bottom: 1px solid #252729;
+            border-right: 0;
+            background: #080808;
+        }
+
+        ul.tabs li.current img {
+            filter: brightness(1);
+        }
+
+        .tab-content {
+            display: none;
+            color: #fff;
+            padding: 25px;
+            flex: 1;
+        }
+
+        .tab-content.current {
+            display: block;
+        }
+
+        .section-title {
+            font-size: 11px;
+            color: #fff;
+            margin-bottom: 15px;
+            margin-top: 10px;
+        }
+
+        .panel {
+            background: #050505;
+            border: 1px solid #252729;
+            padding: 12px;
+            margin-bottom: 10px;
+        }
+
+        .song-info {
+            color: #7ca01c;
+            font-size: 10px;
+            margin-bottom: 12px;
+        }
+
+        .progress-container {
+            margin: 15px 0; /* Increased margin for better spacing */
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 3px;
+            background: #252729;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .progress-bar::before {
+            content: '';
+            position: absolute;
+            top: -8px;
+            left: 0;
+            width: 100%;
+            height: 19px; /* 3px bar + 8px above + 8px below */
+            cursor: pointer;
+            z-index: 1;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #7ca01c;
+            width: 0%;
+            position: relative;
+            z-index: 2;
+        }
+
+        .time-info {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 5px;
+            font-size: 9px;
+            color: #4a4a4a;
+        }
+
+        .button-group {
+            margin: 12px 0;
+        }
+
+        button {
+            background: #080808;
+            border: 1px solid #252729;
+            color: #4a4a4a;
+            padding: 6px 16px;
+            cursor: pointer;
+            font-size: 9px;
+            font-family: 'Pixel7', Verdana;
+            margin-right: 5px;
+        }
+
+        button:hover {
+            color: rgb(160,160,160);
+        }
+
+        button:active {
+            background: #050505;
+        }
+
+        .control {
+            display: block;
+            position: relative;
+            margin-bottom: 10px;
+            margin-left: 27px;
+            padding-top: 2px;
+            color: white;
+            font-size: 9px;
+        }
+
+        .control input {
+            position: absolute;
+            z-index: -1;
+            opacity: 0;
+        }
+
+        .control_indicator {
+            position: absolute;
+            top: 3px;
+            left: -20px;
+            height: 9px;
+            width: 9px;
+            background: #3a3a3a;
+            border: 1px solid #000000;
+        }
+
+        .control:hover input ~ .control_indicator {
+            background: #3a3a3a;
+        }
+
+        .control input:checked ~ .control_indicator {
+            background: #7ca01c;
+        }
+
+        .slider-control {
+            margin-bottom: 12px;
+            margin-left: 27px;
+        }
+
+        .slider-label {
+            font-size: 9px;
+            color: white;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        .slider-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .slider {
+            flex: 1;
+            height: 3px;
+            background: #252729;
+            outline: none;
+            -webkit-appearance: none;
+            cursor: pointer;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 9px;
+            height: 9px;
+            background: #3a3a3a;
+            border: 1px solid #000000;
+            cursor: pointer;
+        }
+
+        .slider::-moz-range-thumb {
+            width: 9px;
+            height: 9px;
+            background: #3a3a3a;
+            border: 1px solid #000000;
+            cursor: pointer;
+        }
+
+        .slider-value {
+            color: #4a4a4a;
+            font-size: 9px;
+            min-width: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div id="menu">
+        <div class="line"></div>
+        
+        <ul class="tabs">
+            <li class="current">
+                <img src="https://i.imgur.com/g8oFnHO.png" alt="Music" draggable="false">
+            </li>
+        </ul>
+
+        <div class="tab-content current">
+            <div class="section-title">AUDIO PLAYER</div>
+            
+            <div class="panel">
+                <div class="song-info">Safe and Sound X Ye - NHH (Extended + Hardstyle)</div>
+                
+                <div class="progress-container">
+                    <div class="progress-bar" id="progressBar">
+                        <div class="progress-fill" id="progress"></div>
+                    </div>
+                    <div class="time-info">
+                        <span id="currentTime">0:00</span>
+                        <span id="duration">0:00</span>
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button id="playBtn">PLAY</button>
+                    <button id="pauseBtn">PAUSE</button>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="slider-control">
+                    <span class="slider-label">Volume</span>
+                    <div class="slider-row">
+                        <input type="range" class="slider" id="volumeSlider" min="0" max="100" value="70">
+                        <span class="slider-value" id="volumeValue">70</span>
+                    </div>
+                </div>
+
+                <label class="control control-checkbox">
+                    Loop track
+                    <input type="checkbox" id="loopCheckbox">
+                    <div class="control_indicator"></div>
+                </label>
+
+                <label class="control control-checkbox">
+                    Auto-play
+                    <input type="checkbox">
+                    <div class="control_indicator"></div>
+                </label>
+            </div>
+        </div>
+
+        <audio id="audio" preload="metadata">
+            <source src="https://github.com/drtffyhu8fdghfgd/nhhhhhhhhhhhhhhhhhhhhhhh/raw/refs/heads/main/Safe%20and%20Sound%20X%20Ye%20-%20NHH%20(Extended%20+%20Hardstyle).mp3" type="audio/mpeg">
+        </audio>
+    </div>
+
+    <script>
+        // Audio controls
+        const audio = document.getElementById('audio');
+        const playBtn = document.getElementById('playBtn');
+        const pauseBtn = document.getElementById('pauseBtn');
+        const progressBar = document.getElementById('progressBar');
+        const progress = document.getElementById('progress');
+        const currentTimeEl = document.getElementById('currentTime');
+        const durationEl = document.getElementById('duration');
+        const volumeSlider = document.getElementById('volumeSlider');
+        const volumeValue = document.getElementById('volumeValue');
+        const loopCheckbox = document.getElementById('loopCheckbox');
+
+        audio.volume = 0.7;
+
+        playBtn.addEventListener('click', function() {
+            audio.play();
+        });
+
+        pauseBtn.addEventListener('click', function() {
+            audio.pause();
+        });
+
+        audio.addEventListener('timeupdate', function() {
+            const percent = (audio.currentTime / audio.duration) * 100;
+            progress.style.width = percent + '%';
+            currentTimeEl.textContent = formatTime(audio.currentTime);
+        });
+
+        audio.addEventListener('loadedmetadata', function() {
+            durationEl.textContent = formatTime(audio.duration);
+        });
+
+        progressBar.addEventListener('click', function(e) {
+            const rect = progressBar.getBoundingClientRect();
+            const percent = (e.clientX - rect.left) / rect.width;
+            audio.currentTime = percent * audio.duration;
+        });
+
+        volumeSlider.addEventListener('input', function(e) {
+            audio.volume = e.target.value / 100;
+            volumeValue.textContent = e.target.value;
+        });
+
+        loopCheckbox.addEventListener('change', function() {
+            audio.loop = this.checked;
+        });
+
+        function formatTime(seconds) {
+            if (isNaN(seconds)) return '0:00';
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return mins + ':' + (secs < 10 ? '0' : '') + secs;
+        }
+
+        // Draggable functionality
+        const menu = document.getElementById('menu');
+        let isDragging = false;
+        let currentX, currentY, initialX, initialY;
+        let xOffset = 0, yOffset = 0;
+
+        menu.addEventListener('mousedown', dragStart);
+        document.addEventListener('mousemove', drag);
+        document.addEventListener('mouseup', dragEnd);
+
+        function dragStart(e) {
+            // Don't start dragging if clicking on interactive elements
+            if (e.target.tagName === 'BUTTON' || 
+                e.target.tagName === 'INPUT' || 
+                e.target.classList.contains('progress-bar') ||
+                e.target.classList.contains('progress-fill') ||
+                e.target.tagName === 'LABEL' ||
+                e.target.tagName === 'IMG' ||
+                e.target.closest('ul.tabs li')) {
+                return;
+            }
+
+            initialX = e.clientX - xOffset;
+            initialY = e.clientY - yOffset;
+            isDragging = true;
+            menu.classList.add('dragging');
+        }
+
+        function drag(e) {
+            if (isDragging) {
+                e.preventDefault();
+                currentX = e.clientX - initialX;
+                currentY = e.clientY - initialY;
+                xOffset = currentX;
+                yOffset = currentY;
+                menu.style.transform = `translate3d(${currentX}px, ${currentY}px, 0)`;
+            }
+        }
+
+        function dragEnd() {
+            initialX = currentX;
+            initialY = currentY;
+            isDragging = false;
+            menu.classList.remove('dragging');
+        }
+    </script>
+</body>
+</html>
